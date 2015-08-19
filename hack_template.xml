@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding='ISO-8859-1' standalone='no'?>
+
+<!-- DO NOT EDIT DOCTYPE STANZA -->
+<!DOCTYPE hack-gallery [
+   <!ENTITY photo-index SYSTEM "photo-index.xml">
+]>
+
+<hack-gallery>
+ 
+  <!-- dir="YYYY/name"   : required path to the hack entry -->
+  <!-- publish="1|0"     : publish a link to this writeup (vs. just list) -->
+  <!-- complete="1|0"    : do we have more we'd like to add to the writeup -->
+  <!-- generate_writeup="1|0" : generate html files from this file -->
+
+  <!-- stub="1|0"        : stub hack-gallery file without a writeup -->
+  <!-- legacy="1|0"      : is data purely an import? -->
+  <!-- omit="1|0"        : entirely omit this hack from the gallery? -->
+  <hack path="2005/hack_name"
+        publish="0" 
+	complete="1"
+	generate_writeup="1" >
+
+    <title>The title of the hack (a really brief description)</title>
+    <link-text>
+      Optional instead of title with <link>surrounding text 
+      to use to link to the entry</link>.  Title used
+      if this isn't present.
+    </link-text>
+    <summary>
+      Short (one or two sentence) summary of the hack.
+    </summary>
+
+  <!-- date="YYYY.MM.DD" : required date that the hack took place, 
+                           used for sorting entries in indexes -->
+    <when date="2005.11.23">
+      Brief descriptive date range for when it was up 
+    </when>
+
+    <where building="10">
+      Brief descriptive location for where it appeared
+      <location tag="dome/m10" />
+      <location tag="lobby/m7" />
+    </where>
+
+    <who group="" hide="1">
+      Perpetrators, if known (hide="1" to not put into HTML)
+    </who>
+    
+    <type tag="calendar/ro">More description of type</type>
+    <type tag="media/publication" />
+    <keyword>keywords may contain spaces</keyword>
+
+    <related path="2005/related_hack" />
+    <related>Description of related hack (depricated: don't add new things this way)</related>
+
+    <!-- 
+    <coverage>
+      <press paper="The Tech" href="http://the-tech.mit.edu/foo">
+	Volume VVV, Number NN, Foos-day, Month MM, 19YY, p. X, description
+      </press>
+      <press paper="MIT Tech Talk" href="">      
+	Volume VV, Number NN, Wednesday, Month MM, 19YY, p. X, description
+      </press>
+      <press paper="Technique" href="">
+	Volume VV, 19YY, p. XX, description 
+      </press>
+      <citation href="">
+	Other citation details
+      </citation>
+      <hackbook which="baker_house" page="50" />
+      <hackbook which="ihtfp_leibowitz" page="60-62" />
+    </coverage>
+
+    <museum>
+      <museum-file number="1q4344" />
+      <museum-artifact>Sword +4 of Destiny!</museum-artifact>
+    </museum>
+    -->
+
+    <writeup>
+
+      <p>The full writeup which can be arbitrary XHTML.</p>
+
+      <p>Note that tag attribute values must be quoted
+      and all tags must have matching end-tags.  For example,
+      use <br/> for a line-break.</p>
+      
+      <photo src="foo.jpg" align="center" valign="" for-index="1"
+	     use-size="medium">
+	<!-- sizes: original/large/medium/small/thumb/w100thumb/w80thumb -->
+	<altphoto size="medium" src="foo.medium.jpg"/>
+	<credit name="Alyssa P Hacker" email="aphacker@mit.edu" hide="0"/>
+	<caption>Caption for a separate photo details page</caption>
+      </photo>
+
+      <p>Try to not use too many unneeded formatting tags.</p>
+
+      <p>Here is a link to a <a href="writeup_more.html">additional
+      supporting page in the writeup</a>.</p>
+
+    </writeup>
+
+    <!-- additional writeup page fragment -->
+    <!--
+    <writeup-page filename="writeup_more.html">
+      <p>More writeup info and photos can be on these pages.</p>
+    </writeup-page>
+    -->
+
+    <additional-photos>
+
+      <photo src="bar.large.jpg">
+	<credit name="Alyssa P Hacker" email="aphacker@mit.edu" hide="0"/>
+	<caption>Caption for a separate photo details page</caption>
+      </photo>
+
+    </additional-photos>
+
+    <version rcsid="$Header$"
+	     lastmod="$Date$" />
+
+  </hack>
+
+</hack-gallery>
