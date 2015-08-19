@@ -3,6 +3,7 @@
 if (isset($_GET['dev'])) $_POST = $_POST + $_GET; //REMOVE AFTER DEVELOPMENT
 
 function reasonable_filename($name) {
+  //Make sure we're looking at something resembling an image
   $parts = explode('.', $name);
   if (preg_match('/[^\w\-\.]/', $name)) {
     return false;
