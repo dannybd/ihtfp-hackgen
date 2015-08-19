@@ -2,13 +2,12 @@
 
 if (isset($_GET['dev'])) $_POST = $_POST + $_GET; //REMOVE AFTER DEVELOPMENT
 
-$xml = null;
-
 function commas_to_tags($list, $pre, $post) {
+  // Take a comma-separated list and map each item into an XHTML tag
   $list = explode(',', $list);
   foreach ($list as &$item) {
     if ($item) {
-      $item = "$pre$item$post";
+      $item = $pre.$item.$post;
     }
   }
   return implode('', $list);
@@ -81,12 +80,7 @@ EOD;
   // die();
 }
 
-/*
-header('Content-type: text/javascript');
-/*/
 header('Content-type: text/html; charset=utf-8');
-header('X-UA-Compatible: IE=edge,chrome=1');
-//*/
 ?>
 <!doctype html>
 <html lang="en-us">
