@@ -172,6 +172,7 @@ scripts/hackgen index
 </p>
 
 <p>
+  You can upload photos and generate the &lt;photo&gt; tags <a href="photos" target="_blank">here</a>.
 </p>
 
 <p>
