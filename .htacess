@@ -1,3 +1,0 @@
-AuthType SSLCert
-Require afsgroup system:ihtfp-gallery-staff
-ErrorDocument 401 /__scripts/needcerts
