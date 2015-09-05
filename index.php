@@ -63,8 +63,7 @@ if (isset($_POST['submit'])) {
     {$_POST['related']}
     <writeup>{$_POST['writeup']}</writeup>
     <additional-photos>{$_POST['additional-photos']}</additional-photos>
-    <version rcsid="$Header$"
-       lastmod="$Date$" />
+    <version rcsid="\$Header\$" lastmod="\$Date\$" />
   </hack>
 </hack-gallery>
 
