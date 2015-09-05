@@ -71,15 +71,8 @@ if (isset($_POST['submit'])) {
 EOD;
 
   $base = './by_year/';
-  $mkdir = shell_exec("mkdir -p $base{$_POST['path']}");
+  mkdir($base.$_POST['path'], 0644, true);
   file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.template.xml', $xml);
-  $tmpfname = tempnam('./tmp', 'hackgen_');
-  chmod($tmpfname, 0644);
-  $handle = fopen($tmpfname, 'w');
-  fwrite($handle, $xml);
-  fclose($handle);
-  // print_r($_POST);
-  // die();
 }
 
 header('Content-type: text/html; charset=utf-8');
@@ -100,17 +93,7 @@ header('Content-type: text/html; charset=utf-8');
 </head>
 <body>
 <? if ($xml) { ?>
-<? print_r($mkdir) ?>
-<?= $base.$_POST['path'] ?>
 <ol>
-  <li>
-    Create the hack's directory:<br>
-    <pre>
-cd /afs/sipb.mit.edu/contrib/hacks
-aklog sipb.mit.edu
-mkdir -p by_year/<?= $_POST['path'] ?>
-    </pre>
-  </li>
   <li>
     Copy photos into <tt>by_year/<?= $_POST['path'] ?></tt>.
   </li>
