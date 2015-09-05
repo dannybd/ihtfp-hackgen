@@ -58,7 +58,6 @@ if (isset($_POST['submit'])) {
       {$_POST['locations']}
     </where>
     {$_POST['who']}
-    <type tag="calendar/ro">More description of type</type>
     {$_POST['types']}
     {$_POST['keywords']}
     {$_POST['related']}
@@ -71,6 +70,9 @@ if (isset($_POST['submit'])) {
 
 EOD;
 
+  $base = './by_year/';
+  $mkdir = shell_exec("mkdir -p $base{$_POST['path']}");
+  file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.template.xml', $xml);
   $tmpfname = tempnam('./tmp', 'hackgen_');
   chmod($tmpfname, 0644);
   $handle = fopen($tmpfname, 'w');
@@ -98,6 +100,8 @@ header('Content-type: text/html; charset=utf-8');
 </head>
 <body>
 <? if ($xml) { ?>
+<? print_r($mkdir) ?>
+<?= $base.$_POST['path'] ?>
 <ol>
   <li>
     Create the hack's directory:<br>
