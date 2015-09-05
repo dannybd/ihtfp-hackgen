@@ -6,8 +6,8 @@ function commas_to_tags($list, $pre, $post) {
   // Take a comma-separated list and map each item into an XHTML tag
   $list = explode(',', $list);
   foreach ($list as &$item) {
-    if ($item) {
-      $item = $pre.$item.$post;
+    if (trim($item)) {
+      $item = $pre.trim($item).$post;
     }
   }
   return implode('', $list);
