@@ -38,7 +38,6 @@ if (isset($_POST['submit'])) {
   }
   $dir = "./by_year/{$_POST['slug']}";
   if (!file_exists(dir)) {
-    $tmp_dir_used = true;
     $dir = "./tmp";
   }
   if ($_POST['url']) {
