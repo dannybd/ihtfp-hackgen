@@ -71,7 +71,7 @@ EOD;
 
   $base = './by_year/';
   mkdir($base.$_POST['path'], 0644, true);
-  file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.template.xml', $xml);
+  file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.hack.xml', $xml);
 }
 
 header('Content-type: text/html; charset=utf-8');
@@ -95,11 +95,6 @@ header('Content-type: text/html; charset=utf-8');
 <ol>
   <li>
     Copy photos into <tt>by_year/<?= $_POST['path'] ?></tt>.
-  </li>
-  <li>
-    Move the generated XML into the hack directory:
-    <pre>
-cp <?= $tmpfname ?> by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml</pre>
   </li>
   <li>
     Run the hackgen script:
@@ -158,7 +153,7 @@ scripts/hackgen index
 </p>
 
 <p>
-  You can upload photos and generate the &lt;photo&gt; tags <a href="photos" target="_blank">here</a>.
+  You can upload photos and generate the &lt;photo&gt; tags <a href="photos.php" target="_blank">here</a>.
 </p>
 
 <p>
