@@ -33,6 +33,14 @@ if (isset($_POST['submit'])) {
   if (!reasonable_filename($_POST['filename'])) {
     die('Bad image name.');
   }
+  if (!preg_match('/^\d{4}\/[\w\-]+$/', $_POST['slug'])) {
+    die('Bad hack folder name.');
+  }
+  $dir = "./by_year/{$_POST['slug']}";
+  if (!file_exists(dir)) {
+    $tmp_dir_used = true;
+    $dir = "./tmp";
+  }
   if ($_POST['url']) {
     $_POST['contact'] = "href=\"{$_POST['url']}\"";
   }
@@ -43,7 +51,7 @@ if (isset($_POST['submit'])) {
   $_POST['hidecredit'] = intval($_POST['hidecredit'] === 'on');
 
   $ext = strtolower(end(explode('.', $image['name'])));
-  if (!move_uploaded_file($image['tmp_name'], "./tmp/{$_POST['filename']}")) {
+  if (!move_uploaded_file($image['tmp_name'], "./$dir/{$_POST['filename']}")) {
     die('Photo upload failure');
   }
 
@@ -84,7 +92,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <? if ($photo) { ?>
 <h3>Photo successfully uploaded!</h3>
 <p>
-  Remember to copy the photo over to the <code>/afs/sipb.mit.edu/contrib/hacks</code> directory you're working in.
+  The photo is now located in <?= "$dir/$_POST['filename']" ?>.
 </p>
 <p>
   Here is the XHTML to paste into your writeup:
@@ -96,6 +104,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <h3>Trying to simplify the process.</h3>
 <form id="photoupload" method="post" action="" enctype="multipart/form-data">
 <p>
+  Warning: only upload photos once you have generated the hack folder.<br>
+  <label for="slug">Hack slug:</label>
+  <input id="slug" name="slug" type="text" placeholder="1994/cp_car" required /><br>
   <label for="file">Photo:</label>
   <input id="file" name="file" type="file" required /><br>
   <label for="filename">Rename photo to (optional):</label>
@@ -109,9 +120,9 @@ header('X-UA-Compatible: IE=edge,chrome=1');
   </select><br>
   <label for="use-size">Use size:</label>
   <select id="use-size" name="use-size">
-    <option value="original" selected>Original</option>
+    <option value="original">Original</option>
     <option value="large">Large</option>
-    <option value="medium">Medium</option>
+    <option value="medium" selected>Medium</option>
     <option value="small">Small</option>
     <option value="thumb">Thumb</option>
   </select>
@@ -122,7 +133,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <p>
   <label for="name">Photo credit name:</label>
   <input id="name" name="name" type="text" placeholder="Alyssa P Hacker" /><br>
-  <em>You can use either a "email" or "href" attribute (but not both) to reference the photographer.</em>
+  <em>You can use either a "email" or "href" attribute (but not both) to reference the photographer.</em><br>
   <label for="email">Photo credit email:</label>
   <input id="email" name="email" type="text" placeholder="aphacker@mit.edu" /><br>
   <label for="url">Photo credit URL:</label>
@@ -137,7 +148,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
   <textarea id="caption" name="caption" cols="80" rows="5"></textarea>
 </p>
 
-<input id="submit" name="submit" type="submit" value="Upload and Generate <photo> Tag" />
+<input id="submit" name="submit" type="submit" value="Upload and Generate &lt;photo&gt; Tag" />
 
 </form>
 <script type="text/javascript">
