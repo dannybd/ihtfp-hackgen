@@ -47,7 +47,7 @@ if (isset($_POST['submit'])) {
 
 <hack-gallery>
   <hack path="{$_POST['path']}"
-        publish="0"
+        publish="1"
         complete="1"
         generate_writeup="1">
     <title>{$_POST['title']}</title>
@@ -109,10 +109,10 @@ scripts/hackgen <?= $_POST['path'] ?>
     Keep making edits and running <tt>scripts/hackgen <?= $_POST['path'] ?></tt> until you're satisfied.
   </li>
   <li>
-    Publish, check in to RCS, and update the index:
+    Then, check in to RCS, and update the index:
     <pre>
-sed -i bak '0,/publish="0"/{s/publish="0"/publish="1"/}' by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml
 ci -u by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml
+
 scripts/hackgen <?= $_POST['path'] ?>
 
 scripts/hackgen index
