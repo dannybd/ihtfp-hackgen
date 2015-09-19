@@ -88,7 +88,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
 <body>
-<? if ($photo) { ?>
+<?php if ($photo) { ?>
 <h3>Photo successfully uploaded!</h3>
 <p>
   The photo is now located in <?= "$dir/$_POST['filename']" ?>.
@@ -98,7 +98,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
   <pre>
 <?= htmlentities($photo) ?></pre>
 </p>
-<? } else { ?>
+<?php } else { ?>
 <h2>IHTFP Hack Gallery Submission Photo Upload</h2>
 <h3>Trying to simplify the process.</h3>
 <form id="photoupload" method="post" action="" enctype="multipart/form-data">
@@ -177,6 +177,6 @@ $(function() {
   });
 });
 </script>
-<? } ?>
+<?php } ?>
 </body>
 </html>

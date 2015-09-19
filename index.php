@@ -91,7 +91,7 @@ header('Content-type: text/html; charset=utf-8');
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
 <body>
-<? if ($xml) { ?>
+<?php if ($xml) { ?>
 <ol>
   <li>
     Copy photos into <tt>by_year/<?= $_POST['path'] ?></tt>.
@@ -119,7 +119,7 @@ scripts/hackgen index
     </pre>
   </li>
 </ol>
-<? } else { ?>
+<?php } else { ?>
 <h2>IHTFP Hack Gallery Submission Generator</h2>
 <h3>Trying to simplify the hack addition process.</h3>
 <form id="hackgen" method="post" action="">
@@ -238,6 +238,6 @@ $(function() {
   });
 });
 </script>
-<? } ?>
+<?php } ?>
 </body>
 </html>
