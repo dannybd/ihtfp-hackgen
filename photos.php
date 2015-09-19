@@ -37,8 +37,8 @@ if (isset($_POST['submit'])) {
     die('Bad hack folder name.');
   }
   $dir = "./by_year/{$_POST['slug']}";
-  if (!file_exists(dir)) {
-    $dir = "./tmp";
+  if (!file_exists($dir)) {
+    die('Hack folder doesn\'t exist yet!');
   }
   if ($_POST['url']) {
     $_POST['contact'] = "href=\"{$_POST['url']}\"";
@@ -50,7 +50,7 @@ if (isset($_POST['submit'])) {
   $_POST['hidecredit'] = intval($_POST['hidecredit'] === 'on');
 
   $ext = strtolower(end(explode('.', $image['name'])));
-  if (!move_uploaded_file($image['tmp_name'], "./$dir/{$_POST['filename']}")) {
+  if (!move_uploaded_file($image['tmp_name'], "$dir/{$_POST['filename']}")) {
     die('Photo upload failure');
   }
 
