@@ -91,7 +91,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <?php if ($photo) { ?>
 <h3>Photo successfully uploaded!</h3>
 <p>
-  The photo is now located in <?= "$dir/$_POST['filename']" ?>.
+  The photo is now located in <?= "$dir/{$_POST['filename']}" ?>.
 </p>
 <p>
   Here is the XHTML to paste into your writeup:
