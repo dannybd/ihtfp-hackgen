@@ -70,7 +70,7 @@ if (isset($_POST['submit'])) {
 EOD;
 
   $base = './by_year/';
-  mkdir($base.$_POST['path'], 0644, true);
+  @mkdir($base.$_POST['path'], 0644, true);
   file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.hack.xml', $xml);
 }
 
