@@ -38,7 +38,7 @@ if (isset($_POST['submit'])) {
   }
   $dir = "./by_year/{$_POST['slug']}";
   if (!file_exists($dir)) {
-    die('Hack folder doesn\'t exist yet!');
+    @mkdir($dir, 0644, true);
   }
   if ($_POST['url']) {
     $_POST['contact'] = "href=\"{$_POST['url']}\"";
@@ -50,7 +50,9 @@ if (isset($_POST['submit'])) {
   $_POST['hidecredit'] = intval($_POST['hidecredit'] === 'on');
 
   $ext = strtolower(end(explode('.', $image['name'])));
-  if (!move_uploaded_file($image['tmp_name'], "$dir/{$_POST['filename']}")) {
+  $filepath = "$dir/{$_POST['filename']}";
+  if (!move_uploaded_file($image['tmp_name'], $filepath)) {
+    var_dump($image);
     die('Photo upload failure');
   }
 
@@ -91,13 +93,35 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <?php if ($photo) { ?>
 <h3>Photo successfully uploaded!</h3>
 <p>
-  The photo is now located in <?= "$dir/{$_POST['filename']}" ?>.
+  The photo is now located in <?= $filepath ?>.
+</p>
+<p>
+  Here how it will render:<br>
+  <img id="uploaded-photo" src="<?= $filepath ?>" style="max-height:600px;" /><br>
+  Want to rotate it?
+  <input type="button" id="rotate-right" value="Rotate Right" />
 </p>
 <p>
   Here is the XHTML to paste into your writeup:
   <pre>
 <?= htmlentities($photo) ?></pre>
 </p>
+<script type="text/javascript">
+var src = '<?= $filepath ?>';
+$(function() {
+  $('#rotate-right').on('click', function() {
+    $('#rotate-right').attr('disabled', true);
+    $.post('rotate_image.php', {src: src}, function(data) {
+      $('#rotate-right').attr('disabled', false);
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      $("#uploaded-photo").attr('src', data.src+'?'+(new Date()).getTime());
+    }, 'json');
+  });
+});
+</script>
 <?php } else { ?>
 <h2>IHTFP Hack Gallery Submission Photo Upload</h2>
 <h3>Trying to simplify the process.</h3>

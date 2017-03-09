@@ -153,7 +153,7 @@ scripts/hackgen index
 </p>
 
 <p>
-  You can upload photos and generate the &lt;photo&gt; tags <a href="photos.php" target="_blank">here</a>.
+  You can upload photos and generate the &lt;photo&gt; tags <a href="photos.php" onclick="window.open('photos.php','popup','width=600,height=600');return false;" target="popup">here</a>.
 </p>
 
 <p>
