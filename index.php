@@ -13,6 +13,35 @@ function commas_to_tags($list, $pre, $post) {
   return implode('', $list);
 }
 
+function get_existing_hack_slugs() {
+  $directories = glob('./by_year/*/*', GLOB_ONLYDIR);
+  $directories = array_filter(
+    $directories,
+    function($dir) {return preg_match('/^\.\/by_year\/\d{4}\/[\w\-]+$/', $dir);}
+  );
+
+  $directories = array_map(
+    function($dir) {return substr($dir, strlen('./by_year/'));},
+    $directories
+  );
+  return array_reverse($directories);
+}
+
+function get_existing_type_tags() {
+  $src = file_get_contents('../../admin-docs/tags.html');
+  $src = strstr($src, '<a name="type"></a>');
+  $src = strstr($src, '<a name="location"></a>', true);
+  preg_match_all('|<tr>\s*<td>.*?</td>\s*<td>(.*?)</td>|sm', $src, $matches);
+  return array_values(array_filter($matches[1]));
+}
+
+function get_existing_location_tags() {
+  $src = file_get_contents('../../admin-docs/tags.html');
+  $src = strstr($src, '<a name="location"></a>');
+  preg_match_all('|<tr>\s*<td>.*?</td>\s*<td>(.*?)</td>|sm', $src, $matches);
+  return array_values(array_filter($matches[1]));
+}
+
 if (isset($_POST['submit'])) {
   $_POST['path'] = $_POST['year'].'/'.$_POST['slug'];
   $_POST['who'] = '<who hide="1">unknown</who>';
@@ -81,14 +110,22 @@ header('Content-type: text/html; charset=utf-8');
 <head>
   <title>Hack Submission Generator</title>
   <style>
-    body{font-size:14px;}
+    body{font-size:14px;font-family:sans-serif;}
     label{font-weight:bold;}
     label.required{color:red;}
     em{font-size:12px;}
     li{margin-bottom:10px;}
     pre{margin:5px 10px 0px;}
+    .ui-autocomplete {
+      max-height: 100px;
+      overflow-y: auto;
+      /* prevent horizontal scrollbar */
+      overflow-x: hidden;
+    }
   </style>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
 <?php if ($xml) { ?>
@@ -179,6 +216,7 @@ scripts/hackgen index
   <input id="where" name="where" type="text" placeholder="10" /><br>
   <label for="locations">Location tags where hack took place (optional):</label><br>
   <em>Comma-separated. The location tag entries may be used to tag the hack as having been in various locations or types of locations. These may be used to add it to various index files. <a href="http://hacks.mit.edu/admin-docs/tags.html#location">Here is a list of the current location tags in use.</a> You should try and use existing tags or tags of similar styles.</em><br>
+  <em><b>New!</b> Now supports auto-complete to make finding tags easier.</em><br>
   <input id="locations" name="locations" type="text" placeholder="dome/m10,grounds/killian" />
 </p>
 
@@ -193,6 +231,7 @@ scripts/hackgen index
 <p>
   <label for="types">Hack types (optional):</label><br>
   <em>Comma-separated. These provide tags about the hack which can be used to include it in various index files. For example, the type-tags may describe the location, target, or class of hack. <a href="http://hacks.mit.edu/admin-docs/tags.html#types">Here is a list of the current type tags in use.</a> You should try and use existing tags or tags of similar styles.</em><br>
+  <em><b>New!</b> Now supports auto-complete to make finding tags easier.</em><br>
   <input id="types" name="types" type="text" placeholder="event/harvard-yale,target/harvard" />
 </p>
 
@@ -205,10 +244,13 @@ scripts/hackgen index
 <p>
   <label for="related">Related hacks (optional):</label><br>
   <em>Comma-separated. Enter in YEAR/HACK_NAME format.</em><br>
+  <em><b>New!</b> Now supports auto-complete to make finding related hacks easier.</em><br>
   <input id="related" name="related" type="text" placeholder="1994/cp_car,2014/foobar" />
 </p>
 
 <input id="submit" name="submit" type="submit" value="Next Steps" />
+
+<div style="margin-bottom:200px;"></div>
 
 </form>
 <script type="text/javascript">
@@ -236,6 +278,56 @@ $(function() {
     }
     return true;
   });
+
+  var hackSlugs = JSON.parse('<?= json_encode(get_existing_hack_slugs()) ?>');
+  var typeTags = JSON.parse('<?= json_encode(get_existing_type_tags()) ?>');
+  var locationTags = JSON.parse('<?= json_encode(get_existing_location_tags()) ?>');
+
+  function split(val) {
+    return val.split(/,\s*/);
+  }
+  function extractLast(term) {
+    return split(term).pop();
+  }
+  function autocompleteTokenField(selector, tagSource) {
+    $(selector)
+      // don't navigate away from the field on tab when selecting an item
+      .on("keydown", function(event) {
+        if (event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active) {
+          event.preventDefault();
+        }
+      })
+      .autocomplete({
+        minLength: 0,
+        source: function(request, response) {
+          // delegate back to autocomplete, but extract the last term
+          response($.ui.autocomplete.filter(
+            tagSource,
+            extractLast(request.term)
+          ));
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function(event, ui) {
+          var terms = split(this.value);
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push(ui.item.value);
+          // add placeholder to get the comma-and-space at the end
+          terms.push("");
+          this.value = terms.join(", ");
+          return false;
+        }
+      });
+  }
+
+  autocompleteTokenField("#locations", locationTags);
+  autocompleteTokenField("#related", hackSlugs);
+  autocompleteTokenField("#types", typeTags);
 });
 </script>
 <?php } ?>

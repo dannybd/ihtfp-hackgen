@@ -80,7 +80,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
 <head>
   <title>Hack Submission Generator</title>
   <style>
-    body{font-size:14px;}
+    body{font-size:14px;font-family:sans-serif;}
     label{font-weight:bold;}
     label.required{color:red;}
     em{font-size:12px;}
