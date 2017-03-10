@@ -47,17 +47,18 @@ if ($src = $_POST['src']) {
   ));
 }
 
+$error_msg_explanation = '(Should be formatted like `by_year/'.date('Y').'/hack_name/photo.jpg`)';
 $valid_url = false;
 if ($url = $_GET['url']) {
   $valid_url = true;
   if (!preg_match('/^by_year\/\d{4}\/[\w\-]+\//', $url) || strpos($url, '/..') !== false) {
     $valid_url = false;
-    $error_msg = 'Bad image path! (Should be formatted like `by_year/2017/hack_name/photo.jpg`)';
+    $error_msg = 'Bad image path! '.$error_msg_explanation;
   } else {
     $image_data = @getimagesize('./'.$url); // ['mime'];
     if (!$image_data) {
       $valid_url = false;
-      $error_msg = 'Not an image! (Should be formatted like `by_year/2017/hack_name/photo.jpg`)';
+      $error_msg = 'Not an image! '.$error_msg_explanation;
     }
   }
 }
