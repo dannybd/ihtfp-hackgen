@@ -2,6 +2,74 @@
 
 if (isset($_GET['dev'])) $_POST = $_POST + $_GET; //REMOVE AFTER DEVELOPMENT
 
+function parse_existing_hack_info() {
+  preg_match("/^(\d{4})\/(\w+)\/?$/", $_GET['path'], $path_matches);
+  $hack = array();
+  $hack['year'] = $path_matches[1];
+  $hack['slug'] = $path_matches[2];
+
+  $xml = @simplexml_load_file(
+    './by_year/'.$hack['year'].'/'.$hack['slug'].'/'.$hack['slug'].'.hack.xml'
+  ) or new SimpleXMLElement('<hack-gallery></hack-gallery>');
+  $hack_xml = $xml->hack;
+
+  $hack['title'] = (string)$hack_xml->title;
+  $hack['summary'] = preg_replace(
+    "/<\/?summary\/?>/",
+    "",
+    $hack_xml->summary->asXML()
+  );
+  $hack['writeup'] = preg_replace(
+    "/<\/?writeup\/?>/",
+    "",
+    $hack_xml->writeup->asXML()
+  );
+  $hack['additional-photos'] = preg_replace(
+    "/<\/?additional-photos\/?>/",
+    "",
+    $hack_xml->{'additional-photos'}->asXML()
+  );
+
+  preg_match(
+    "/^(\d{4}\.\d\d\.\d\d)-?(\d{4}\.\d\d\.\d\d)?$/",
+    (string)$hack_xml->when['date'],
+    $when_matches
+  );
+
+  $hack['whenstart'] = (string)$when_matches[1];
+  $hack['whenend'] = (string)$when_matches[2];
+  $hack['whendesc'] = (string)$hack_xml->when;
+
+  $hack['wheredesc'] = trim((string)$hack_xml->where);
+  $hack['where'] = (string)$hack_xml->where['building'];
+
+  $hack['locations'] = '';
+  foreach ($hack_xml->where->location as $location) {
+    $hack['locations'] .= (string)$location['tag'].', ';
+  }
+
+  $hack['whoid'] = (string)$hack_xml->who['hide'];
+  $hack['whoname'] = (string)$hack_xml->who;
+
+  $hack['types'] = '';
+  foreach ($hack_xml->type as $type) {
+    $hack['types'] .= (string)$type['tag'].', ';
+  }
+
+  $hack['keywords'] = '';
+  foreach ($hack_xml->keyword as $keyword) {
+    $hack['keywords'] .= (string)$keyword.', ';
+  }
+
+  $hack['related'] = '';
+  foreach ($hack_xml->related as $related) {
+    $hack['related'] .= (string)$related['path'].', ';
+  }
+
+  return $hack;
+}
+$hack = parse_existing_hack_info();
+
 function commas_to_tags($list, $pre, $post) {
   // Take a comma-separated list and map each item into an XHTML tag
   $list = explode(',', $list);
@@ -162,31 +230,31 @@ scripts/hackgen index
 <form id="hackgen" method="post" action="">
 <p>
   <label for="year" class="required">Year of hack:</label><br>
-  <input id="year" name="year" type="text" placeholder="<?= date('Y') ?>" required />
+  <input id="year" name="year" type="text" placeholder="<?= date('Y') ?>" required value="<?= $hack['year'] ?>" />
 </p>
 
 <p>
   <label for="slug" class="required">Hack slug:</label><br>
   <em>This is the unique identifier for the hack. The file should also be named "HACK_NAME.hack.xml".</em><br>
-  <input id="slug" name="slug" type="text" placeholder="hack_name" required />
+  <input id="slug" name="slug" type="text" placeholder="hack_name" required value="<?= $hack['slug'] ?>" />
 </p>
 
 <p>
   <label for="title" class="required">Hack title:</label><br>
   <em>This should be similar to a headline in length and style. We tend to capitalize proper nouns and not capitalize other words (similar to newspaper headlines).</em><br>
-  <input id="title" name="title" type="text" placeholder="Name of the Hack" required />
+  <input id="title" name="title" type="text" placeholder="Name of the Hack" required value="<?= $hack['title'] ?>" />
 </p>
 
 <p>
   <label for="summary" class="required">Hack summary:</label><br>
   <em>The summary should be a one or two sentence summary of the hack. It may be XHTML containing tags such as &lt;i&gt; and &lt;b&gt;. It will be included on detailed index pages below the title.</em><br>
-  <textarea id="summary" name="summary" cols="80" placeholder="A thing went into a place!" required></textarea>
+  <textarea id="summary" name="summary" cols="80" placeholder="A thing went into a place!" required><?= $hack['summary'] ?></textarea>
 </p>
 
 <p>
   <label for="writeup" class="required">Hack writeup:</label><br>
   <em>The writeup section is the primary writeup for the hack. It may contain fairly arbitrary XHTML. For example, paragraphs should be in &lt;p&gt;...&lt;/p&gt; blocks. You may also have multiple &lt;photo&gt; tags within a writeup (which are described in great detail <a href="http://hacks.mit.edu/admin-docs/howto-update.html#photos">here</a>).</em><br>
-  <textarea id="writeup" name="writeup" cols="80" rows="20" required></textarea>
+  <textarea id="writeup" name="writeup" cols="80" rows="20" required><?= $hack['writeup'] ?></textarea>
 </p>
 
 <p>
@@ -196,56 +264,56 @@ scripts/hackgen index
 <p>
   <label for="additional-photos">Additional photos (optional):</label><br>
   <em>This may be used as a container for more &lt;photo&gt; tags that you don't want in the main page. They will be displayed on the additional information page.</em><br>
-  <textarea id="additional-photos" name="additional-photos" cols="80"></textarea>
+  <textarea id="additional-photos" name="additional-photos" cols="80"><?= $hack['additional-photos'] ?></textarea>
 </p>
 
 <p>
   <label for="whenstart" class="required">Date of hack [YYYY.MM.DD]:</label><br>
-  <input id="whenstart" name="whenstart" type="text" placeholder="YYYY.MM.DD" maxlength="12" required /><br>
+  <input id="whenstart" name="whenstart" type="text" placeholder="YYYY.MM.DD" maxlength="12" required value="<?= $hack['whenstart'] ?>" /><br>
   <label for="whenend">End date of hack [YYYY.MM.DD] (optional):</label><br>
-  <input id="whenend" name="whenend" type="text" placeholder="YYYY.MM.DD" maxlength="12" /><br>
+  <input id="whenend" name="whenend" type="text" placeholder="YYYY.MM.DD" maxlength="12" value="<?= $hack['whenend'] ?>" /><br>
   <label for="whendesc">Date description (optional):</label><br>
   <em>Include a description inside of the tag. If this is used, the description will be used in the summary on the hack write-up page (and thus should contain the date as well).</em><br>
-  <input id="whendesc" name="whendesc" type="text" placeholder="December 24, 2007 (Christmas Eve)" />
+  <input id="whendesc" name="whendesc" type="text" placeholder="December 24, 2007 (Christmas Eve)" value="<?= $hack['whendesc'] ?>" />
 </p>
 
 <p>
   <label for="wheredesc" class="required">Description of where hack took place:</label><br>
-  <input id="wheredesc" name="wheredesc" type="text" placeholder="The Great Dome (Building 10)" required /><br>
+  <input id="wheredesc" name="wheredesc" type="text" placeholder="The Great Dome (Building 10)" required value="<?= $hack['wheredesc'] ?>" /><br>
   <label for="where">Building number where hack took place (optional):</label><br>
-  <input id="where" name="where" type="text" placeholder="10" /><br>
+  <input id="where" name="where" type="text" placeholder="10" value="<?= $hack['where'] ?>" /><br>
   <label for="locations">Location tags where hack took place (optional):</label><br>
   <em>Comma-separated. The location tag entries may be used to tag the hack as having been in various locations or types of locations. These may be used to add it to various index files. <a href="http://hacks.mit.edu/admin-docs/tags.html#location">Here is a list of the current location tags in use.</a> You should try and use existing tags or tags of similar styles.</em><br>
   <em><b>New!</b> Now supports auto-complete to make finding tags easier.</em><br>
-  <input id="locations" name="locations" type="text" placeholder="dome/m10,grounds/killian" />
+  <input id="locations" name="locations" type="text" placeholder="dome/m10,grounds/killian" value="<?= $hack['locations'] ?>" />
 </p>
 
 <p>
   <label for="whoid">Group ID of perpetrators, if known (optional):</label><br>
   <em>If the hack is explictly self-signed such that the public knows who pulled it, fill this in with a short identifier for the group along with a description of them.</em><br>
-  <input id="whoid" name="whoid" type="text" placeholder="ORK" /><br>
+  <input id="whoid" name="whoid" type="text" placeholder="ORK" value="<?= $hack['whoid'] ?>" /><br>
   <label for="whoname">Name of perpetrators, if known (optional):</label><br>
-  <input id="whoid" name="whoname" type="text" placeholder="Order of the Random Knights (ORK)" />
+  <input id="whoid" name="whoname" type="text" placeholder="Order of the Random Knights (ORK)" value="<?= $hack['whoname'] ?>" />
 </p>
 
 <p>
   <label for="types">Hack types (optional):</label><br>
   <em>Comma-separated. These provide tags about the hack which can be used to include it in various index files. For example, the type-tags may describe the location, target, or class of hack. <a href="http://hacks.mit.edu/admin-docs/tags.html#types">Here is a list of the current type tags in use.</a> You should try and use existing tags or tags of similar styles.</em><br>
   <em><b>New!</b> Now supports auto-complete to make finding tags easier.</em><br>
-  <input id="types" name="types" type="text" placeholder="event/harvard-yale,target/harvard" />
+  <input id="types" name="types" type="text" placeholder="event/harvard-yale,target/harvard" value="<?= $hack['types'] ?>" />
 </p>
 
 <p>
   <label for="keywords">Keywords (optional):</label><br>
   <em>Comma-separated. Keywords may contain spaces.</em><br>
-  <input id="keywords" name="keywords" type="text" placeholder="foobar,barfoo" />
+  <input id="keywords" name="keywords" type="text" placeholder="foobar,barfoo" value="<?= $hack['keywords'] ?>" />
 </p>
 
 <p>
   <label for="related">Related hacks (optional):</label><br>
   <em>Comma-separated. Enter in YEAR/HACK_NAME format.</em><br>
   <em><b>New!</b> Now supports auto-complete to make finding related hacks easier.</em><br>
-  <input id="related" name="related" type="text" placeholder="1994/cp_car,2014/foobar" />
+  <input id="related" name="related" type="text" placeholder="1994/cp_car,2014/foobar" value="<?= $hack['related'] ?>" />
 </p>
 
 <input id="submit" name="submit" type="submit" value="Next Steps" />
