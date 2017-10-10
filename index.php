@@ -10,7 +10,10 @@ function parse_existing_hack_info() {
 
   $xml = @simplexml_load_file(
     './by_year/'.$hack['year'].'/'.$hack['slug'].'/'.$hack['slug'].'.hack.xml'
-  ) or new SimpleXMLElement('<hack-gallery></hack-gallery>');
+  );
+  if (!$xml) {
+    return $hack;
+  }
   $hack_xml = $xml->hack;
 
   $hack['title'] = (string)$hack_xml->title;
@@ -227,6 +230,10 @@ scripts/hackgen index
 <?php } else { ?>
 <h2>IHTFP Hack Gallery Submission Generator</h2>
 <h3>Trying to simplify the hack addition process.</h3>
+<p>
+  <strong>New: Load an existing hack by adding <tt>?path=[year]/[slug]</tt> to the URL.</strong>
+  Try it out with <a href="?path=2017/glados">this example</a>.
+</p>
 <form id="hackgen" method="post" action="">
 <p>
   <label for="year" class="required">Year of hack:</label><br>
