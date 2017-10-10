@@ -91,7 +91,7 @@ function commas_to_tags($list, $pre, $post) {
 }
 
 function get_existing_hack_slugs() {
-  $directories = glob('./by_year/*/*', GLOB_ONLYDIR);
+  $directories = glob('./by_year/'.'*/'.'*', GLOB_ONLYDIR);
   $directories = array_filter(
     $directories,
     function($dir) {return preg_match('/^\.\/by_year\/\d{4}\/[\w\-]+$/', $dir);}
@@ -206,7 +206,17 @@ header('Content-type: text/html; charset=utf-8');
   <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
-<?php if ($xml && !$file_locked) { ?>
+<?php if ($file_locked) { ?>
+<p>
+  <strong>Warning:</strong> The XML file is currently locked! Run this:
+  <pre>
+co -l by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml
+  </pre>
+  and then try again.
+</p>
+<hr />
+<?php } else if ($xml) { ?>
+<h2>Hack XML Updated Successfully!</h2>
 <ol>
   <li>
     Copy photos into <tt>by_year/<?= $_POST['path'] ?></tt>.
@@ -219,9 +229,6 @@ scripts/hackgen <?= $_POST['path'] ?>
   </li>
   <li>
     Check how things look here: <a href="http://hacks.mit.edu/by_year/<?= $_POST['path'] ?>">http://hacks.mit.edu/by_year/<?= $_POST['path'] ?></a>
-  </li>
-  <li>
-    <strong>New!</strong> You can now edit the XML file more from this editor, here: <a href="http://hacks.mit.edu/admin-tools/addhack/?path=<?= $_POST['path'] ?>">http://hacks.mit.edu/admin-tools/addhack/?path=<?= $_POST['path'] ?></a>
   </li>
   <li>
     Keep making edits and running <tt>scripts/hackgen <?= $_POST['path'] ?></tt> until you're satisfied.
@@ -237,17 +244,8 @@ scripts/hackgen index
     </pre>
   </li>
 </ol>
-<?php } else { ?>
-<?php if ($file_locked) { ?>
-<p>
-  <strong>Warning:</strong> The XML file is currently locked! Run this:
-  <pre>
-co -l by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml
-  </pre>
-  and then try again.
-</p>
 <hr />
-<?php  } ?>
+<?php } ?>
 <h2>IHTFP Hack Gallery Submission Generator</h2>
 <h3>Trying to simplify the hack addition process.</h3>
 <p>
@@ -425,6 +423,5 @@ $(function() {
   autocompleteTokenField("#types", typeTags);
 });
 </script>
-<?php } ?>
 </body>
 </html>
