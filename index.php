@@ -22,7 +22,7 @@ function parse_existing_hack_info() {
   }
   $hack_xml = $xml->hack;
 
-  $hack['title'] = (string)$hack_xml->title;
+  $hack['title'] = trim((string)$hack_xml->title);
   $hack['summary'] = preg_replace(
     "/<\/?summary\/?>/",
     "",
@@ -47,7 +47,7 @@ function parse_existing_hack_info() {
 
   $hack['whenstart'] = (string)$when_matches[1];
   $hack['whenend'] = (string)$when_matches[2];
-  $hack['whendesc'] = (string)$hack_xml->when;
+  $hack['whendesc'] = trim((string)$hack_xml->when);
 
   $hack['wheredesc'] = trim((string)$hack_xml->where);
   $hack['where'] = (string)$hack_xml->where['building'];
@@ -58,7 +58,7 @@ function parse_existing_hack_info() {
   }
 
   $hack['whoid'] = (string)$hack_xml->who['hide'];
-  $hack['whoname'] = (string)$hack_xml->who;
+  $hack['whoname'] = trim((string)$hack_xml->who);
 
   $hack['types'] = '';
   foreach ($hack_xml->type as $type) {
