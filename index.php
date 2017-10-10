@@ -3,6 +3,12 @@
 if (isset($_GET['dev'])) $_POST = $_POST + $_GET; //REMOVE AFTER DEVELOPMENT
 
 function parse_existing_hack_info() {
+  if (isset($_POST['submit'])) {
+    return $_POST;
+  }
+  if (!isset($_GET['path'])) {
+    return array();
+  }
   preg_match("/^(\d{4})\/(\w+)\/?$/", $_GET['path'], $path_matches);
   $hack = array();
   $hack['year'] = $path_matches[1];
@@ -171,7 +177,8 @@ EOD;
 
   $base = './by_year/';
   @mkdir($base.$_POST['path'], 0644, true);
-  file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.hack.xml', $xml);
+  $file_save = @file_put_contents($base.$_POST['path'].'/'.$_POST['slug'].'.hack.xml', $xml);
+  $file_locked = $file_save === FALSE;
 }
 
 header('Content-type: text/html; charset=utf-8');
@@ -199,7 +206,7 @@ header('Content-type: text/html; charset=utf-8');
   <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 </head>
 <body>
-<?php if ($xml) { ?>
+<?php if ($xml && !$file_locked) { ?>
 <ol>
   <li>
     Copy photos into <tt>by_year/<?= $_POST['path'] ?></tt>.
@@ -212,6 +219,9 @@ scripts/hackgen <?= $_POST['path'] ?>
   </li>
   <li>
     Check how things look here: <a href="http://hacks.mit.edu/by_year/<?= $_POST['path'] ?>">http://hacks.mit.edu/by_year/<?= $_POST['path'] ?></a>
+  </li>
+  <li>
+    <strong>New!</strong> You can now edit the XML file more from this editor, here: <a href="http://hacks.mit.edu/admin-tools/addhack/?path=<?= $_POST['path'] ?>">http://hacks.mit.edu/admin-tools/addhack/?path=<?= $_POST['path'] ?></a>
   </li>
   <li>
     Keep making edits and running <tt>scripts/hackgen <?= $_POST['path'] ?></tt> until you're satisfied.
@@ -228,6 +238,16 @@ scripts/hackgen index
   </li>
 </ol>
 <?php } else { ?>
+<?php if ($file_locked) { ?>
+<p>
+  <strong>Warning:</strong> The XML file is currently locked! Run this:
+  <pre>
+co -l by_year/<?= $_POST['path'] ?>/<?= $_POST['slug'] ?>.hack.xml
+  </pre>
+  and then try again.
+</p>
+<hr />
+<?php  } ?>
 <h2>IHTFP Hack Gallery Submission Generator</h2>
 <h3>Trying to simplify the hack addition process.</h3>
 <p>

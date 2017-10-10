@@ -96,7 +96,7 @@ header('X-UA-Compatible: IE=edge,chrome=1');
   The photo is now located in <?= $filepath ?>.
 </p>
 <p>
-  Here how it will render:<br>
+  Here's how it will render:<br>
   <img id="uploaded-photo" src="<?= $filepath ?>" style="max-height:600px;" /><br>
   Want to rotate it?
   <input type="button" id="rotate-right" value="Rotate Right" />
